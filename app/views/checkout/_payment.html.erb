@@ -1,0 +1,88 @@
+<fieldset id="payment">
+  <legend><%= t("payment_information") %></legend>
+  <%= hook :checkout_payment_step, {:form => form} do %>
+    <% @order.available_payment_methods.each do |method| %>
+    <p>
+      <% if method.kind_of?(BillingIntegration::CieloBillingIntegration) %>
+
+        <%= radio_button_tag "order[payments_attributes][][payment_method_id]", method.id, method == @order.payment_method, :class => 'cielo' %>
+
+        <label for="order_payments_attributes__payment_method_id_<%= method.id %>">
+          <%= t(method.name, :scope => :payment_methods, :default => method.name) %>
+        </label>
+        
+        <div id="extra_payment_options">
+          <ul id="flags">
+            <li>
+              <%= radio_button_tag "order[payments_attributes][][payment_flag]", 'Visa', true %> 
+              <label for="order_payments_attributes__payment_flag_Visa">Visa</label>
+            </li>
+            <li>
+              <%= radio_button_tag "order[payments_attributes][][payment_flag]", 'Mastercard' %> 
+              <label for="order_payments_attributes__payment_flag_Mastercard">Mastercard</label>
+            </li>
+            <li>
+              <%= radio_button_tag "order[payments_attributes][][payment_flag]", 'Diners' %> 
+              <label for="order_payments_attributes__payment_flag_Diners">Diners</label>
+            </li>
+          </ul>
+          <label for="order_payments_attributes__payment_method_parcelas_<%= method.id %>">Parcelas</label>:
+          <%= select("order[payments_attributes][][payment_method_parcelas]", method.id, parcelas_range) %>
+        </div>
+
+      <% else %>
+
+        <%= radio_button_tag "order[payments_attributes][][payment_method_id]", method.id, method == @order.payment_method %>
+
+        <label for="order_payments_attributes__payment_method_id_<%= method.id %>">
+          <%= t(method.name, :scope => :payment_methods, :default => method.name) %>
+        </label>
+
+      <% end %>
+    </p>
+    <% end %>
+
+    <ul id="payment-methods">
+      <% @order.available_payment_methods.each do |method| %>
+        <li id="payment_method_<%= method.id %>"<%= ' class="last"' if method == @order.available_payment_methods.last %>>
+        </li>
+      <% end %>
+    </ul>
+    <br style='clear:both;' />
+  <% end %>
+</fieldset>
+
+<hr class="space" />
+<div class="form-buttons">
+  <input type="submit" class="continue sprited-continuar-button button primary" value="<%=t("save_and_continue") %>" />
+</div>
+
+<script type="text/javascript">
+  $.paymentOptionIsCielo = function(){
+    return $('input[name="order[payments_attributes][][payment_method_id]"]:checked').hasClass('cielo');
+  }
+
+  var extra_payment_options = $('#extra_payment_options');
+  
+  /*
+   * Quando o usuário mudar a opção de pagamento,
+   *    se escolher Cielo, 
+   *        mostrar as bandeiras e opções de parcelamento,
+   *    senão, escondê-las.
+  */
+  $('#payment p input:radio').change(function(e){
+
+    if ($.paymentOptionIsCielo()){
+      extra_payment_options.show();
+    } else {
+      extra_payment_options.hide();
+    }
+  }).trigger('change');
+
+  // if payment != cielo => cleans the form from useless parameters
+  $('#checkout_form_payment').submit(function(){
+    if (!$.paymentOptionIsCielo()) {
+      extra_payment_options.html('');
+    }
+  });
+</script>

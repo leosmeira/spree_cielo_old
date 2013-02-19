@@ -1,0 +1,1 @@
+<%= link_to "Cielo", "https://www.sella.it/ecommerce/gestpay/gestpay.jsp", :class => "cielo external link" %>

@@ -1,0 +1,75 @@
+<% payment.order.cielo_transactions.each do |transaction| %>
+
+  <fieldset class="transaction">
+    <legend>Transação: <%= transaction.tid %></legend>
+
+    <p class="tid" style="display:none">TID: <%= transaction.tid %></p>
+    <p class="status">Status: <%= transaction.status_label %></p>
+    <p class="pan">Pan: <%= transaction.pan %></p>
+
+    <%= if_property transaction, :forma_pagamento do |forma_pagamento| %>
+      <div id="forma-pagamento">
+        <p>Forma de pagamento:</p>
+        <ul>
+          <li class="bandeira">Bandeira: <span class="value"><%= forma_pagamento[:bandeira] %></span></li>
+          <li class="produto">Produto: <span class="value"><%= forma_pagamento[:produto] %></span></li>
+          <li class="parcelas">Parcelas: <span class="value"><%= forma_pagamento[:parcelas] %></span></li>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= if_property transaction, :autenticacao do |autenticacao| %>
+      <div id="autenticacao">
+        <p>Autenticação:</p>
+        <ul>
+          <li class="codigo">Código: <span class="value"><%= autenticacao[:codigo] %></span></li>
+          <li class="mensagem">Mensagem: <span class="value"><%= autenticacao[:mensagem] %></span</li>
+          <li class="data">Data: <span class="value"><%= autenticacao[:"data-hora"] %></span></li>
+          <li class="valor">Valor: <span class="value"><%= autenticacao[:valor] %></span></li>
+          <li class="eci">Eci: <span class="value"><%= autenticacao[:eci] %></span></li><!-- nível de segurança -->
+        </ul>
+      </div>
+    <% end %>
+
+    <%= if_property transaction, :autorizacao do |autorizacao| %>
+      <div id="autorizacao">
+        <p>Autorização:</p>
+        <ul>
+          <li class="codigo">Código: <span class="value"><%= autorizacao[:codigo] %></span></li>
+          <li class="mensagem">Mensagem: <span class="value"><%= autorizacao[:mensagem] %></span></li>
+          <li class="data">Data: <span class="value"><%= autorizacao[:"data-hora"] %></span></li>
+          <li class="valor">Valor: <span class="value"><%= autorizacao[:valor] %></span></li>
+          <li class="lr">Lr: <span class="value"><%= autorizacao[:lr] %></span></li>
+          <li class="arp">Arp: <span class="value"><%= autorizacao[:arp] %></span></li>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= if_property transaction, :captura do |captura| %>
+      <div id="captura">
+        <p>Captura:</p>
+        <ul>
+          <li class="codigo">Código: <span class="value"><%= captura[:codigo] %></span></li>
+          <li class="mensagem">Mensagem: <span class="value"><%= captura[:mensagem] %></span></li>
+          <li class="data">Data: <span class="value"><%= captura[:"data-hora"] %></span></li>
+          <li class="valor">Valor: <span class="value"><%= captura[:valor] %></span></li>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= if_property transaction, :cancelamento do |cancelamento| %>
+      <div id="cancelamento">
+        <p>Cancelamento:</p>
+        <ul>
+          <li class="codigo">Código: <span class="value"><%= cancelamento[:codigo] %></span></li>
+          <li class="mensagem">Mensagem: <span class="value"><%= cancelamento[:mensagem] %></span></li>
+          <li class="data">Data: <span class="value"><%= cancelamento[:"data-hora"] %></span></li>
+        </ul>
+      </div>
+    <% end %>
+
+    <p class="created_at">Criação: <span class="value"><%= transaction[:created_at].strftime('%d/%m/%Y %H:%M') %></span></p>
+
+  </fieldset>
+
+<% end %>
